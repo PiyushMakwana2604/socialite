@@ -101,7 +101,6 @@ const userModel = {
 
     async login(req, res) {
         const userData = await UserSchema.findOne({ $and: [{ email: req.emailmobile }, { is_deleted: "0" }] });
-        console.log('userData: ', userData);
         if (!userData) {
             return await middleware.sendResponse(res, Codes.ERROR, lang[req.language].rest_keywords_userdatanotfound_message, null);
         }

@@ -88,6 +88,9 @@ const message = {
     'rest_keywords_categorydata_notvalid_message': "Invalid Category Data",
 
 
+    // Post Message
+    "rest_keywords_addpostdata_error_message": "Cann't add Post Please Try again Later",
+    "rest_keywords_post_feed_list_success": "SucessFully Got the Post Feed List Data",
     // API And TOKEN Message
 
     'rest_keywords_api_notvalid_message': "Invallid API Key",

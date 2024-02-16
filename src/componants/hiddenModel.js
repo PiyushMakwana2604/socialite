@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux';
+import { addPostRedux } from '../store/actions/postAction';
+import { postFeedListRedux } from '../store/actions/postAction';
 
 function HiddenModel(props) {
+    const dispatch = useDispatch();
     const [handlePostPopup, setHandlePostPopup] = useState(false);
     const [handlePreviewPostPopup, sethandlePreviewPostPopup] = useState(false);
     const [selectedImages, setSelectedImages] = useState([]);
@@ -9,9 +13,10 @@ function HiddenModel(props) {
     const [selectedImagesError, setSelectedImagesError] = useState();
     const fileInputRef = useRef(null);
     const fileVideoRef = useRef(null);
-
+    const [textValue, setTextValue] = useState("");
+    const [imageValue, setImageValue] = useState([]);
+    const [videoValue, setVideoValue] = useState([]);
     useEffect(() => {
-        console.log('props.handlePreviewPostPopup: ', props.handlePreviewPostPopup);
         if (props.handlePreviewPostPopup > 0) {
             sethandlePreviewPostPopup(true);
         }
@@ -22,12 +27,11 @@ function HiddenModel(props) {
         }
     }, [props.handlePostPopup])
 
-    const handleCloseModal = () => {
-        setHandlePostPopup(false);
-    };
+    //Add Post Image 
     const handleFileInputChange = (event) => {
         const selectedFiles = event.target.files;
         if (selectedFiles.length > 0 && selectedFiles.length <= 7) {
+            setImageValue(selectedFiles)
             setIsCreate(true);
             setSelectedImagesError("");
             const imageUrls = [];
@@ -40,6 +44,7 @@ function HiddenModel(props) {
             }
             setSelectedImages(imageUrls);
         } else {
+            setImageValue([])
             setSelectedImagesError("The limit is 7 photos or video");
             setSelectedImages([]);
         }
@@ -47,6 +52,7 @@ function HiddenModel(props) {
     const handleFileVideoChange = (event) => {
         const selectedFiles = event.target.files;
         if (selectedFiles.length > 0 && selectedFiles.length <= 7) {
+            setVideoValue(selectedFiles);
             setIsCreate(true);
             setSelectedImagesError("");
             const imageUrls = [];
@@ -66,28 +72,67 @@ function HiddenModel(props) {
     const handleRemoveImage = (index) => {
         const newSelectedImages = [...selectedImages];
         newSelectedImages.splice(index, 1);
+        const filesArray = Array.from(imageValue);
+        filesArray.splice(index, 1);
+
+        const dataTransfer = new DataTransfer();
+        filesArray.forEach((file) => {
+            dataTransfer.items.add(file);
+        });
+        const updatedFileList = dataTransfer.files;
+        setImageValue(updatedFileList);
+
         if (newSelectedImages.length == 0) {
-            setIsCreate(false);
+            if (videoValue.length == 0 && !textValue) {
+                setIsCreate(false);
+            }
+            setImageValue([])
         }
         setSelectedImages(newSelectedImages);
     };
     const handleRemoveVideo = (index) => {
-        console.log('index: ', index);
         const newSelectedVideos = [...selectedVideos];
         newSelectedVideos.splice(index, 1);
-        console.log('newSelectedVideos: ', newSelectedVideos);
+        const filesArray = Array.from(videoValue);
+        filesArray.splice(index, 1);
+
+        const dataTransfer = new DataTransfer();
+        filesArray.forEach((file) => {
+            dataTransfer.items.add(file);
+        });
+        const updatedFileList = dataTransfer.files;
+        setVideoValue(updatedFileList);
         if (newSelectedVideos.length == 0) {
-            setIsCreate(false);
+            if (imageValue.length == 0 && !textValue) {
+                setIsCreate(false);
+            }
+            setVideoValue([]);
         }
         setSelectedVideos(newSelectedVideos);
     };
     const handleSubmitAddPostEvent = () => {
-        console.log();
+        let request = {
+            message: textValue,
+            post_image: imageValue,
+            post_video: videoValue
+        }
+        dispatch(addPostRedux(request)).then((result) => {
+            if (result?.payload?.code == 200) {
+                setSelectedImagesError([]);
+                setTextValue("");
+                setImageValue([]);
+                setVideoValue([]);
+                setIsCreate(false);
+                setSelectedImages([]);
+                setSelectedVideos([]);
+                setHandlePostPopup(false);
+                dispatch(postFeedListRedux());
+            }
+        });;
     }
 
     return (
         <>
-            &lt;&gt;
             {/* post preview modal */}
             <div className={`hidden lg:p-20 max-lg:!items-start ${handlePreviewPostPopup ? 'uk-modal uk-open' : ''}`} id="preview_modal" uk-modal>
                 <div className="uk-modal-dialog tt relative mx-auto overflow-hidden shadow-xl rounded-lg lg:flex items-center ax-w-[86rem] w-full lg:h-[80vh]">
@@ -254,14 +299,14 @@ function HiddenModel(props) {
                         <h2 className="text-sm font-medium text-black"> Create Status </h2>
                         {/* close button */}
                         <button type="button" className="button-icon absolute top-0 right-0 m-2.5 uk-modal-close">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6" onClick={handleCloseModal}>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6" onClick={() => setHandlePostPopup(false)}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
                     <div className="space-y-5 mt-3 p-2">
-                        <textarea className="w-full !text-black placeholder:!text-black !bg-white !border-transparent focus:!border-transparent focus:!ring-transparent !font-normal !text-xl   dark:!text-white dark:placeholder:!text-white dark:!bg-slate-800" name id rows={6} placeholder="What do you have in mind?" defaultValue={""} onChange={(event) => {
-                            if (event.target.value && event.target.value != "") { setIsCreate(true) } else {
+                        <textarea className="w-full !text-black placeholder:!text-black !bg-white !border-transparent focus:!border-transparent focus:!ring-transparent !font-normal !text-xl   dark:!text-white dark:placeholder:!text-white dark:!bg-slate-800" name id rows={6} placeholder="What do you have in mind?" value={textValue} onChange={(event) => {
+                            if (event.target.value && event.target.value != "") { setIsCreate(true); setTextValue(event.target.value) } else {
                                 setIsCreate(false)
                             }
                         }}
@@ -412,7 +457,7 @@ function HiddenModel(props) {
                         </div>
                         {iscreate && (
                             <div className="flex items-center gap-2">
-                                <button type="button" className="button bg-blue-500 text-white py-2 px-12 text-[14px]"> Create</button>
+                                <button type="button" className="button bg-blue-500 text-white py-2 px-12 text-[14px]" onClick={handleSubmitAddPostEvent}> Create</button>
                             </div>
                         )}
                     </div>
@@ -450,7 +495,7 @@ function HiddenModel(props) {
                                 <ion-icon name="time-outline" className="text-3xl text-sky-600  rounded-full bg-blue-50 dark:bg-transparent" />
                                 <p className="text-sm text-gray-500 font-medium"> Your Status will be available <br /> for <span className="text-gray-800"> 24 Hours</span> </p>
                             </div>
-                            <button type="button" className="button bg-blue-500 text-white px-8" onClick={handleSubmitAddPostEvent}> Create</button>
+                            <button type="button" className="button bg-blue-500 text-white px-8" > Create</button>
                         </div>
                     </div>
                 </div>

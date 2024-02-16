@@ -4,6 +4,7 @@ import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import OtpVerification from "../pages/Auth/OtpVerification";
 import Home from "../pages/Home";
+import Messages from "../pages/messages";
 import Error from "../componants/Error";
 import Redirect from "../componants/Redirect";
 
@@ -47,6 +48,14 @@ function useRoutes() {
                 path: URLS.HOME.url,
                 name: URLS.HOME.name,
                 element: <Home />,
+                isPrivate: true,
+                exact: true,
+            },
+            {
+                id: "messages_page",
+                path: URLS.MESSAGES.url,
+                name: URLS.MESSAGES.name,
+                element: <Messages />,
                 isPrivate: true,
                 exact: true,
             },

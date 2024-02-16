@@ -15,6 +15,10 @@ export const URLS = {
         url: "/otp-verification",
         name: "otp Verification",
     },
+    MESSAGES: {
+        url: "/messages",
+        name: "messages",
+    },
     REDIRECT: {
         url: "/redirect",
         name: "Redirect",

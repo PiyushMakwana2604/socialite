@@ -20,10 +20,12 @@ AxiosClientApi.interceptors.request.use(function (request) {
     request.data = bodyEncryption(request.data, true)
     const userDataString = localStorage.getItem('userData');
     let userData = "";
+    let token = "";
     if (userDataString) {
         userData = JSON.parse(userDataString);
+        token = bodyPlainEncryption(userData.device_info.token)
     }
-    request.headers['token'] = userData.token;
+    request.headers['token'] = token;
     return request;
 });
 
@@ -50,6 +52,15 @@ export const bodyEncryption = (request, isStringify) => {
     try {
         let new_request = (isStringify) ? JSON.stringify(request) : request;
         const encryptedData = CryptoJS.AES.encrypt(new_request, SECRET, { iv: IV }).toString();
+        return encryptedData;
+    } catch (error) {
+        console.log('Encryption error: ', error);
+        return '';
+    }
+};
+export const bodyPlainEncryption = (request) => {
+    try {
+        const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(request), SECRET, { iv: IV }).toString();
         return encryptedData;
     } catch (error) {
         console.log('Encryption error: ', error);

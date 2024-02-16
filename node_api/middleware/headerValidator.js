@@ -69,7 +69,9 @@ const headerValidator = {
             if (bypassMethod.indexOf(pathData[2]) === -1) {
                 if (headerToken !== '') {
                     try {
-                        const token = CryptLib.decrypt(headerToken, shakey, process.env.IV);
+                        let token = crypto.AES.decrypt(headerToken, SECRET, { iv: IV }).toString(crypto.enc.Utf8);
+                        token = token.replace(/"/g, '');
+                        // const token = CryptLib.decrypt(headerToken, shakey, process.env.IV);
                         const userDetails = await UserSchema.findOne({ "device_info.token": token })
                         if (userDetails !== null && userDetails !== undefined) {
                             req.user_id = userDetails.id;
@@ -103,6 +105,7 @@ const headerValidator = {
             let data = headerValidator.isJson(decryptedData);
             // console.log('data: ', data);
             data.language = req.language
+            data.user_id = req.user_id
             return data;
         } catch (error) {
             console.log('error: ', error);
@@ -175,6 +178,7 @@ const headerValidator = {
         try {
             let data = headerValidator.isJson(req);
             const encryptedData = crypto.AES.encrypt(JSON.stringify(data), SECRET, { iv: IV }).toString();
+            console.log('encryptedData: ', encryptedData);
             res.json(encryptedData);
 
         } catch (error) {
