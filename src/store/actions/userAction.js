@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { registerApi } from "../../services/apiHandler";
+import { logoutApi, registerApi } from "../../services/apiHandler";
 import { otpVerificationApi } from "../../services/apiHandler";
 import { loginApi } from "../../services/apiHandler";
 import toastr from 'toastr';
@@ -93,6 +93,15 @@ export const otpVerificationRedux = createAsyncThunk("user/otp verification", as
             });
         }
         return response
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+})
+export const logoutRedux = createAsyncThunk("user/logout", async () => {
+    try {
+        const response = await logoutApi();
+        return response;
     } catch (error) {
         console.error(error);
         throw error;

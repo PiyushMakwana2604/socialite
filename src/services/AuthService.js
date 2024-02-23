@@ -37,8 +37,7 @@ AxiosClientApi.interceptors.response.use(
         return response;
     },
     function (error) {
-        error.response.data = bodyDecryptData(error.response.data);
-        console.log('error: ', error);
+        error.response.data = bodyDecryptData(error?.response?.data);
         if (error.response !== undefined && error.response !== "" && error.response.data.code) {
             // console.log('Api Response By Client  ======> ', error.response.data);
             return error.response.data;

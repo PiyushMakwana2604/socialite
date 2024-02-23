@@ -17,7 +17,7 @@ export const addPostRedux = createAsyncThunk("post/add-post", async (data) => {
                 formData.append('post_media', image);
                 const response = await uploadPostFileApi(formData);
                 if (response.code === 200) {
-                    media.push({ name: response.data.post_media, media_type: "image" })
+                    media.push({ name: response?.data?.post_media, media_type: "image" })
                 }
             }
         }
@@ -27,19 +27,21 @@ export const addPostRedux = createAsyncThunk("post/add-post", async (data) => {
                 formData.append('post_media', video);
                 const response = await uploadPostFileApi(formData);
                 if (response.code === 200) {
-                    media.push({ name: response.data.post_media, media_type: "video" })
+                    media.push({ name: response?.data?.post_media, media_type: "video" })
                 }
             }
         }
         request.post_media = media
+        console.log('request: ', request);
         const response = await addPostApi(request);
+        console.log('response: ', response);
         if (response.code === 200) {
-            toastr.success(response.message, 'Event', {
+            toastr.success(response?.message, 'Event', {
                 progressBar: true,
                 timeOut: 3000,
             });
         } else {
-            toastr.error(response.message, 'Event', {
+            toastr.error(response?.message, 'Event', {
                 progressBar: true,
                 timeOut: 3000,
             });

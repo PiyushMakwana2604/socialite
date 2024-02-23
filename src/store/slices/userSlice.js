@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginRedux } from "../actions/userAction";
+import { loginRedux, logoutRedux } from "../actions/userAction";
 import { registerRedux } from "../actions/userAction";
 import { otpVerificationRedux } from "../actions/userAction";
 const userSlice = createSlice({
@@ -57,6 +57,23 @@ const userSlice = createSlice({
             state.isLoading = false;
         })
         builder.addCase(otpVerificationRedux.rejected, (state, action) => {
+            console.log("ERROR", action.payload);
+            state.isLoading = false;
+            state.isError = true
+        })
+        // Logout User
+        builder.addCase(logoutRedux.pending, (state, action) => {
+            state.isLoading = true;
+        })
+        builder.addCase(logoutRedux.fulfilled, (state, action) => {
+            if (action.payload.code == 200) {
+                state.isLoggedIn = false
+                state.data = [];
+                localStorage.clear();
+            }
+            state.isLoading = false;
+        })
+        builder.addCase(logoutRedux.rejected, (state, action) => {
             console.log("ERROR", action.payload);
             state.isLoading = false;
             state.isError = true

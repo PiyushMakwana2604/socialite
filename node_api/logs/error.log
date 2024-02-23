@@ -175,3 +175,8 @@
 {"level":"\u001b[31merror\u001b[39m","message":"Malformed UTF-8 data","timestamp":"2024-02-15T07:26:46.301Z"}
 {"level":"\u001b[31merror\u001b[39m","message":"Malformed UTF-8 data","timestamp":"2024-02-15T07:26:48.598Z"}
 {"level":"\u001b[31merror\u001b[39m","message":"Malformed UTF-8 data","timestamp":"2024-02-15T07:26:58.708Z"}
+{"level":"\u001b[31merror\u001b[39m","message":"Cannot set headers after they are sent to the client","timestamp":"2024-02-20T12:06:03.359Z"}
+{"level":"\u001b[31merror\u001b[39m","message":"Cannot set headers after they are sent to the client","timestamp":"2024-02-20T12:06:44.559Z"}
+{"level":"\u001b[31merror\u001b[39m","message":"Cannot set headers after they are sent to the client","timestamp":"2024-02-20T12:06:56.041Z"}
+{"level":"\u001b[31merror\u001b[39m","message":"Cannot set headers after they are sent to the client","timestamp":"2024-02-20T12:08:20.095Z"}
+{"level":"\u001b[31merror\u001b[39m","message":"Cannot read properties of undefined (reading 'status')","timestamp":"2024-02-20T13:20:51.546Z"}
